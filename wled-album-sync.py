@@ -6,6 +6,7 @@
 #     "pillow",
 #     "colorthief",
 #     "numpy",
+#     "flask",
 # ]
 # ///
 
@@ -18,6 +19,8 @@ from io import BytesIO
 from PIL import Image
 from colorthief import ColorThief
 import numpy as np
+from flask import Flask
+from threading import Thread
 
 def load_env(var):
     val = os.getenv(var)
@@ -34,9 +37,23 @@ config = {
     'spotify_client_id': os.getenv('SPOTIFY_CLIENT_ID'),
     'spotify_client_secret': os.getenv('SPOTIFY_CLIENT_SECRET'),
     'spotify_refresh_token': os.getenv('SPOTIFY_REFRESH_TOKEN'),
+    'http_port': int(os.getenv('HTTP_PORT', '8080')),
 }
 
 token_state = {'token': None, 'expires_at': 0}
+sync_state = {'enabled': True}
+
+app = Flask(__name__)
+
+@app.route('/toggle', methods=['POST'])
+def toggle():
+    sync_state['enabled'] = not sync_state['enabled']
+    status = 'enabled' if sync_state['enabled'] else 'disabled'
+    return {'status': status}, 200
+
+@app.route('/status')
+def status():
+    return {'enabled': sync_state['enabled']}, 200
 
 def get_access_token():
     auth = base64.b64encode(f"{config['spotify_client_id']}:{config['spotify_client_secret']}".encode()).decode()
@@ -164,17 +181,24 @@ def apply_wled(colors):
     resp = requests.post(f"{config['wled_url']}/json/state", json=payload)
     return resp.status_code == 200
 
-def main():
+def sync_loop():
     last_id = None
     while True:
-        track = get_ha_track() or get_spotify_track()
-        if track and track['id'] != last_id:
-            print(f"{track['name']} - {track['artist']}")
-            img = download_art(track['art'], track.get('auth'))
-            colors = extract_colors(img)
-            apply_wled(colors)
-            last_id = track['id']
+        if sync_state['enabled']:
+            track = get_ha_track() or get_spotify_track()
+            if track and track['id'] != last_id:
+                print(f"{track['name']} - {track['artist']}")
+                img = download_art(track['art'], track.get('auth'))
+                colors = extract_colors(img)
+                apply_wled(colors)
+                last_id = track['id']
         time.sleep(0.5)
+
+def main():
+    import logging
+    logging.getLogger('werkzeug').setLevel(logging.ERROR)
+    Thread(target=sync_loop, daemon=True).start()
+    app.run(host='0.0.0.0', port=config['http_port'], debug=False, use_reloader=False)
 
 if __name__ == '__main__':
     main()
