@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wled-album-sync"
+version = "0.1.0"
+dependencies = [
+    "requests",
+    "pillow",
+    "colorthief",
+    "numpy",
+    "flask",
+]
+
+[project.scripts]
+wled-album-sync = "wled_album_sync:main"

@@ -1,15 +1,3 @@
-#!/usr/bin/env -S uv run
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#     "requests",
-#     "pillow",
-#     "colorthief",
-#     "numpy",
-#     "flask",
-# ]
-# ///
-
 import os
 import sys
 import time

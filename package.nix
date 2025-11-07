@@ -1,21 +1,24 @@
 {
   lib,
-  stdenv,
-  uv,
-  makeWrapper,
+  python3,
 }:
-stdenv.mkDerivation {
+
+python3.pkgs.buildPythonApplication {
   pname = "wled-album-sync";
   version = "0.1.0";
+  pyproject = true;
 
   src = ./.;
 
-  nativeBuildInputs = [makeWrapper];
+  build-system = with python3.pkgs; [
+    setuptools
+  ];
 
-  installPhase = ''
-    mkdir -p $out/bin
-    makeWrapper ${lib.getExe uv} $out/bin/wled-album-sync \
-      --add-flags "run ${./wled-album-sync.py}" \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [stdenv.cc.cc.lib]}
-  '';
+  dependencies = with python3.pkgs; [
+    requests
+    pillow
+    colorthief
+    numpy
+    flask
+  ];
 }
