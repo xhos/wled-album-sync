@@ -1,10 +1,12 @@
 {
   config,
   lib,
-  pkgs,
+  inputs,
+  system,
   ...
 }: let
   cfg = config.services.wled-album-sync;
+  wled-album-sync = inputs.wled-album-sync.packages.${system}.default;
 in {
   options.services.wled-album-sync = {
     enable = lib.mkEnableOption "WLED album sync";
@@ -49,7 +51,7 @@ in {
       after = ["network-online.target"];
 
       serviceConfig = {
-        ExecStart = "${lib.getExe pkgs.wled-album-sync}";
+        ExecStart = "${lib.getExe wled-album-sync}";
         EnvironmentFile = lib.mkIf (cfg.envFile != null) cfg.envFile;
         Restart = "on-failure";
         DynamicUser = true;
