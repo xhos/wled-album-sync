@@ -1,12 +1,12 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
-  system,
   ...
 }: let
   cfg = config.services.wled-album-sync;
-  wled-album-sync = inputs.wled-album-sync.packages.${system}.default;
+  wled-album-sync = inputs.wled-album-sync.packages.${pkgs.system}.default;
 in {
   options.services.wled-album-sync = {
     enable = lib.mkEnableOption "WLED album sync";
