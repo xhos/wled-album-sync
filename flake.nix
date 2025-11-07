@@ -11,12 +11,12 @@
       (system: f nixpkgs.legacyPackages.${system});
   in {
     packages = forAllSystems (pkgs: {
-      default = pkgs.callPackage ./package.nix { };
-      wled-album-sync = pkgs.callPackage ./package.nix { };
+      default = pkgs.callPackage ./package.nix {};
+      wled-album-sync = pkgs.callPackage ./package.nix {};
 
       # inherit env vars
       get-refresh-token = pkgs.writeShellScriptBin "get-refresh-token" ''
-        export PATH=${pkgs.lib.makeBinPath [ pkgs.curl pkgs.jq pkgs.coreutils ]}:$PATH
+        export PATH=${pkgs.lib.makeBinPath [pkgs.curl pkgs.jq pkgs.coreutils]}:$PATH
         ${builtins.readFile ./get-refresh-token.sh}
       '';
     });
