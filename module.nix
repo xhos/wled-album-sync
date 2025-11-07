@@ -37,16 +37,9 @@ in {
       };
     };
 
-    spotify = {
-      clientId = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-      };
-
-      redirectUri = lib.mkOption {
-        type = lib.types.str;
-        default = "http://127.0.0.1:8888/callback";
-      };
+    spotify.clientId = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
     };
   };
 
@@ -75,7 +68,6 @@ in {
         }
         // lib.optionalAttrs (cfg.spotify.clientId != null) {
           SPOTIFY_CLIENT_ID = cfg.spotify.clientId;
-          SPOTIFY_REDIRECT_URI = cfg.spotify.redirectUri;
         };
     };
   };
