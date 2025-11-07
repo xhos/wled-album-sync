@@ -123,6 +123,8 @@ def distance(c1, c2):
 
 def frequency(img, color, tol=30):
     small = img.resize((100, 100))
+    if small.mode != 'RGB':
+        small = small.convert('RGB')
     pixels = np.array(small)
     diff = np.abs(pixels - color)
     matches = np.all(diff < tol, axis=2)
@@ -180,7 +182,7 @@ def sync_loop():
                 colors = extract_colors(img)
                 apply_wled(colors)
                 last_id = track['id']
-        time.sleep(0.5)
+        time.sleep(5)
 
 def main():
     import logging
