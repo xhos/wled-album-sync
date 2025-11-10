@@ -48,7 +48,6 @@ in {
   config = lib.mkIf cfg.enable {
     systemd.services.wled-album-sync = {
       wantedBy = ["multi-user.target"];
-      after = ["network-online.target"];
 
       serviceConfig = {
         ExecStart = "${lib.getExe wled-album-sync}";

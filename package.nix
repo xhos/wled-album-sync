@@ -21,4 +21,8 @@ python3.pkgs.buildPythonApplication {
     numpy
     flask
   ];
+
+  meta = {
+    mainProgram = "wled-album-sync";
+  };
 }
